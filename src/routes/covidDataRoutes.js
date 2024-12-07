@@ -4,6 +4,7 @@ const fs = require("fs");
 const csvtojson = require("csvtojson");
 const router = express.Router();
 const CovidData = require("../models/covidDataModel");
+const { log } = require("console");
 
 const upload = multer({ dest: "uploads/" });
 
@@ -22,8 +23,6 @@ router.post(
 
       const jsonData = await csvtojson().fromFile(filePath);
 
-      console.log("id - ", req.user.id);
-      
       const covidDataEntry = new CovidData({
         user: req.user.id,
         fileName: req.file.originalname,
@@ -45,8 +44,9 @@ router.post(
 
 // GET маршрут для отримання даних для авторизованого користувача
 router.get("/covid-data", async (req, res) => {
+  log(req.user.id);
   try {
-    const covidData = await CovidData.find({ user: req.user._id });
+    const covidData = await CovidData.find({ user: req.user.id });
 
     if (!covidData || covidData.length === 0) {
       return res.status(404).json({ message: "Дані не знайдено" });

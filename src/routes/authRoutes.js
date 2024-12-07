@@ -51,7 +51,18 @@ router.post("/login", async (req, res) => {
       expiresIn: "1d", // Токен діє 1 день
     });
 
-    res.status(200).json({ message: "Авторизація успішна", token });
+    // Форматування відповіді з користувачем
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    };
+
+    res.status(200).json({
+      message: "Авторизація успішна",
+      token,
+      user: userResponse,
+    });
   } catch (error) {
     res.status(500).json({ message: "Помилка сервера", error });
   }

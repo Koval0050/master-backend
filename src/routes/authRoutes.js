@@ -46,15 +46,29 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Неправильний email або пароль" });
     }
 
-    // Генерація JWT
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d", // Токен діє 1 день
-    });
+    // Генерація JWT з ім'ям користувача в payload
+    const token = jwt.sign(
+      { id: user._id, name: user.name }, // Додаємо ім'я користувача в payload
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" } // Токен діє 1 день
+    );
 
-    res.status(200).json({ message: "Авторизація успішна", token });
+    // Форматування відповіді з користувачем
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    };
+
+    res.status(200).json({
+      message: "Авторизація успішна",
+      token,
+      user: userResponse,
+    });
   } catch (error) {
     res.status(500).json({ message: "Помилка сервера", error });
   }
 });
+
 
 module.exports = router;
